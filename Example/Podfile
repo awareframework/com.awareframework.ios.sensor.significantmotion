@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'com.awareframework.ios.sensor.significantmotion_Example' do
+  pod 'com.awareframework.ios.sensor.significantmotion', :path => '../'
+
+  target 'com.awareframework.ios.sensor.significantmotion_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
