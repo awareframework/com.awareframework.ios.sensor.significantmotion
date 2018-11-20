@@ -1,5 +1,5 @@
 import XCTest
-import com.awareframework.ios.sensor.significantmotion
+import com_awareframework_ios_sensor_significantmotion
 
 class Tests: XCTestCase {
     
