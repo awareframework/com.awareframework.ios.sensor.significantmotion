@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'com.awareframework.ios.sensor.significantmotion'
-  s.version          = '0.1.0'
+  s.version       = '0.2.0'
   s.summary          = 'A Significant Motion Sensor Module for AWARE Framework.'
 
 # This description is used to generate tags and improve search results.
