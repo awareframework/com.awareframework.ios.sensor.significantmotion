@@ -61,15 +61,12 @@ public class SignificantMotionSensor: AwareSensor {
     var isSignificantMotionActive = false
     
     public class Config:SensorConfig {
+        
         public var sensorObserver:SignificantMotionObserver? = nil
         
         public override init(){
             super.init()
             dbPath = "aware_significant_motion"
-        }
-        
-        public convenience init(_ json:JSON){
-            self.init()
         }
         
         public func apply(closure:(_ config: SignificantMotionSensor.Config) -> Void) -> Self {
