@@ -171,7 +171,7 @@ public class SignificantMotionSensor: AwareSensor {
     
     public override func sync(force: Bool = false) {
         if let engine = self.dbEngine {
-            engine.startSync(SignificantMotionData.TABLE_NAME, DbSyncConfig.init().apply{config in
+            engine.startSync(SignificantMotionData.TABLE_NAME, SignificantMotionData.self, DbSyncConfig.init().apply{config in
                 config.debug = self.CONFIG.debug
             })
         }
