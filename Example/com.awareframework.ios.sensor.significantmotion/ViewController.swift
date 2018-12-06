@@ -16,23 +16,21 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{config in
-            config.debug = true
-            config.sensorObserver = Observer()
-        })
-        sensor?.start()
+//        sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{config in
+//            config.debug = true
+//            config.sensorObserver = Observer()
+//        })
+//        sensor?.start()
     }
 
     class Observer:SignificantMotionObserver {
         func onSignificantMotionStart() {
-            print("start")
+            print("====start====")
         }
         
         func onSignificantMotionEnd() {
-            print("stop")
+            print("====stop====")
         }
-        
-        
     }
     
     override func didReceiveMemoryWarning() {
