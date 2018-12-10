@@ -1,6 +1,7 @@
 import XCTest
 import RealmSwift
-import com_awareframework_ios_sensor_significantmotion
+@testable import com_awareframework_ios_sensor_significantmotion
+import com_awareframework_ios_sensor_core
 
 class Tests: XCTestCase {
     
@@ -13,24 +14,6 @@ class Tests: XCTestCase {
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
-    }
-    
-    func testSync(){
-        //        let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
-        //            config.debug = true
-        //            config.dbType = .REALM
-        //        })
-        //        sensor.start();
-        //        sensor.enable();
-        //        sensor.sync(force: true)
-        
-        //        let syncManager = DbSyncManager.Builder()
-        //            .setBatteryOnly(false)
-        //            .setWifiOnly(false)
-        //            .setSyncInterval(1)
-        //            .build()
-        //
-        //        syncManager.start()
     }
     
     func testObserver(){
@@ -150,6 +133,75 @@ class Tests: XCTestCase {
         let newDict = data.toDictionary()
          XCTAssertEqual(newDict["moving"] as! Bool, true)
     }
+    
+    
+    func testSyncModule(){
+        #if targetEnvironment(simulator)
+        
+        print("This test requires a real SignificantMotion.")
+        
+        #else
+        // success //
+        let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
+            config.debug = true
+            config.dbType = .REALM
+            config.dbHost = "node.awareframework.com:1001"
+            config.dbPath = "sync_db"
+        })
+        if let engine = sensor.dbEngine as? RealmEngine {
+            engine.removeAll(SignificantMotionData.self)
+            for _ in 0..<100 {
+                engine.save(SignificantMotionData())
+            }
+        }
+        let successExpectation = XCTestExpectation(description: "success sync")
+        let observer = NotificationCenter.default.addObserver(forName: Notification.Name.actionAwareSignificantMotionSyncCompletion,
+                                                              object: sensor, queue: .main) { (notification) in
+                                                                if let userInfo = notification.userInfo{
+                                                                    if let status = userInfo["status"] as? Bool {
+                                                                        if status == true {
+                                                                            successExpectation.fulfill()
+                                                                        }
+                                                                    }
+                                                                }
+        }
+        sensor.sync(force: true)
+        wait(for: [successExpectation], timeout: 20)
+        NotificationCenter.default.removeObserver(observer)
+        
+        ////////////////////////////////////
+        
+        // failure //
+        let sensor2 = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
+            config.debug = true
+            config.dbType = .REALM
+            config.dbHost = "node.awareframework.com.com" // wrong url
+            config.dbPath = "sync_db"
+        })
+        let failureExpectation = XCTestExpectation(description: "failure sync")
+        let failureObserver = NotificationCenter.default.addObserver(forName: Notification.Name.actionAwareSignificantMotionSyncCompletion,
+                                                                     object: sensor2, queue: .main) { (notification) in
+                                                                        if let userInfo = notification.userInfo{
+                                                                            if let status = userInfo["status"] as? Bool {
+                                                                                if status == false {
+                                                                                    failureExpectation.fulfill()
+                                                                                }
+                                                                            }
+                                                                        }
+        }
+        if let engine = sensor2.dbEngine as? RealmEngine {
+            engine.removeAll(SignificantMotionData.self)
+            for _ in 0..<100 {
+                engine.save(SignificantMotionData())
+            }
+        }
+        sensor2.sync(force: true)
+        wait(for: [failureExpectation], timeout: 20)
+        NotificationCenter.default.removeObserver(failureObserver)
+        
+        #endif
+    }
+
     
     let sampleAccData =
     [

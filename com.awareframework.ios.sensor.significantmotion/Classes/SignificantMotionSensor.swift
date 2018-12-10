@@ -22,6 +22,7 @@ extension Notification.Name {
     public static let actionAwareSignificantMotionEnded    = Notification.Name(SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_ENDED)
     public static let actionAwareSignificantMotionSetLabel = Notification.Name(SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_SET_LABEL)
     public static let actionAwareSignificantMotionSync     = Notification.Name(SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_SYNC)
+    public static let actionAwareSignificantMotionSyncCompletion     = Notification.Name(SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_SYNC_COMPLETION)
 }
 
 public extension SignificantMotionSensor{
@@ -40,6 +41,9 @@ public extension SignificantMotionSensor{
     public static let EXTRA_LABEL = "label"
     
     public static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC"
+    public static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC_COMPLETION = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC_COMPLETION"
+    public static let EXTRA_STATUS = "status"
+    public static let EXTRA_ERROR = "error"
 
 }
 
@@ -99,14 +103,14 @@ public class SignificantMotionSensor: AwareSensor {
                     self.detectSignificantMotion(x:x, y:y, z:z)
                 }
             }
-            self.notificationCenter.post(name: .actionAwareSignificantMotionStart, object: nil)
+            self.notificationCenter.post(name: .actionAwareSignificantMotionStart, object: self)
         }
     }
     
     public override func stop() {
         if self.motion.isAccelerometerAvailable{
             self.motion.stopAccelerometerUpdates()
-            self.notificationCenter.post(name: .actionAwareSignificantMotionStop, object: nil)
+            self.notificationCenter.post(name: .actionAwareSignificantMotionStop, object: self)
         }
     }
     
@@ -114,17 +118,27 @@ public class SignificantMotionSensor: AwareSensor {
         if let engine = self.dbEngine {
             engine.startSync(SignificantMotionData.TABLE_NAME, SignificantMotionData.self, DbSyncConfig.init().apply{config in
                 config.debug = self.CONFIG.debug
+                config.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.significantmotion.sync.queue")
+                config.completionHandler = { (status, error) in
+                    var userInfo: Dictionary<String,Any> = [SignificantMotionSensor.EXTRA_STATUS :status]
+                    if let e = error {
+                        userInfo[SignificantMotionSensor.EXTRA_ERROR] = e
+                    }
+                    self.notificationCenter.post(name: .actionAwareSignificantMotionSyncCompletion,
+                                                 object: self,
+                                                 userInfo:userInfo)
+                }
             })
         }
-        self.notificationCenter.post(name: .actionAwareSignificantMotionSync, object: nil)
+        self.notificationCenter.post(name: .actionAwareSignificantMotionSync, object: self)
     }
     
-    public func set(label:String) {
+    public override func set(label:String) {
         self.CONFIG.label = label
-        self.notificationCenter.post(name: .actionAwareSignificantMotionSetLabel, object: nil, userInfo: [SignificantMotionSensor.EXTRA_LABEL: label])
+        self.notificationCenter.post(name: .actionAwareSignificantMotionSetLabel, object: self, userInfo: [SignificantMotionSensor.EXTRA_LABEL: label])
     }
     
-    public func detectSignificantMotion(x:Double, y:Double, z:Double){
+    func detectSignificantMotion(x:Double, y:Double, z:Double){
         /**
          * The algorithm information
          * https://developer.android.com/reference/android/hardware/SensorManager
@@ -160,19 +174,19 @@ public class SignificantMotionSensor: AwareSensor {
                 data.label  = self.CONFIG.label
                 
                 if let engine = self.dbEngine {
-                    engine.save(data, SignificantMotionData.TABLE_NAME)
+                    engine.save(data)
                 }
                 
                 if (self.currentSignificantMotionState){
                     if let observer = self.CONFIG.sensorObserver{
                         observer.onSignificantMotionStart()
                     }
-                    self.notificationCenter.post(name: .actionAwareSignificantMotionStarted, object: nil)
+                    self.notificationCenter.post(name: .actionAwareSignificantMotionStarted, object: self)
                 }else{
                     if let observer = self.CONFIG.sensorObserver{
                         observer.onSignificantMotionEnd()
                     }
-                    self.notificationCenter.post(name: .actionAwareSignificantMotionEnded, object: nil)
+                    self.notificationCenter.post(name: .actionAwareSignificantMotionEnded, object: self)
                 }
             }
             self.lastSignificantMotionState = self.currentSignificantMotionState

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import com_awareframework_ios_sensor_core
+@testable import com_awareframework_ios_sensor_core
 
 public class SignificantMotionData: AwareObject {
     public static var TABLE_NAME = "significantMotionData"
