@@ -48,7 +48,6 @@ public extension SignificantMotionSensor{
 }
 
 public class SignificantMotionSensor: AwareSensor {
-    
     /**
      * For real-time observation of the sensor data collection.
      */
@@ -81,10 +80,11 @@ public class SignificantMotionSensor: AwareSensor {
         super.init()
         CONFIG = config
         initializeDbEngine(config: config)
-        if config.debug { print(SignificantMotionSensor.TAG, "SignificantMotion sensor is created") }
+        if config.debug { print(SignificantMotionSensor.TAG, #function) }
     }
     
     public override func start() {
+        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         if self.motion.isAccelerometerAvailable {
             /**
              * SensorManager.SENSOR_DELAY_FASTEST   0ms
@@ -108,6 +108,7 @@ public class SignificantMotionSensor: AwareSensor {
     }
     
     public override func stop() {
+        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         if self.motion.isAccelerometerAvailable{
             self.motion.stopAccelerometerUpdates()
             self.notificationCenter.post(name: .actionAwareSignificantMotionStop, object: self)
@@ -115,6 +116,7 @@ public class SignificantMotionSensor: AwareSensor {
     }
     
     public override func sync(force: Bool = false) {
+        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         if let engine = self.dbEngine {
             engine.startSync(SignificantMotionData.TABLE_NAME, SignificantMotionData.self, DbSyncConfig.init().apply{config in
                 config.debug = self.CONFIG.debug
@@ -134,11 +136,13 @@ public class SignificantMotionSensor: AwareSensor {
     }
     
     public override func set(label:String) {
+        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         self.CONFIG.label = label
         self.notificationCenter.post(name: .actionAwareSignificantMotionSetLabel, object: self, userInfo: [SignificantMotionSensor.EXTRA_LABEL: label])
     }
     
     func detectSignificantMotion(x:Double, y:Double, z:Double){
+        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         /**
          * The algorithm information
          * https://developer.android.com/reference/android/hardware/SensorManager
