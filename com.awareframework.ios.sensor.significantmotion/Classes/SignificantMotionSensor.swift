@@ -142,7 +142,6 @@ public class SignificantMotionSensor: AwareSensor {
     }
     
     func detectSignificantMotion(x:Double, y:Double, z:Double){
-        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         /**
          * The algorithm information
          * https://developer.android.com/reference/android/hardware/SensorManager

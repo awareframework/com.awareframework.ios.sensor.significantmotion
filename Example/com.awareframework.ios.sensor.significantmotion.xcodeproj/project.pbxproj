@@ -267,10 +267,8 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-com.awareframework.ios.sensor.significantmotion_Example/Pods-com.awareframework.ios.sensor.significantmotion_Example-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-com.awareframework.ios.sensor.significantmotion_Example/Pods-com.awareframework.ios.sensor.significantmotion_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
@@ -280,8 +278,6 @@
 				"${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.significantmotion/com_awareframework_ios_sensor_significantmotion.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -293,7 +289,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-com.awareframework.ios.sensor.significantmotion_Example/Pods-com.awareframework.ios.sensor.significantmotion_Example-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-com.awareframework.ios.sensor.significantmotion_Example/Pods-com.awareframework.ios.sensor.significantmotion_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		19C01CF9E99A83EA3293041C /* [CP] Check Pods Manifest.lock */ = {
