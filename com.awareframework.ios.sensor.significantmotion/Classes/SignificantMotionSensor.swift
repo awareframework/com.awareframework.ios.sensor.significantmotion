@@ -26,24 +26,24 @@ extension Notification.Name {
 }
 
 public extension SignificantMotionSensor{
-    public static let TAG = "AWARE::Significant"
+    static let TAG = "AWARE::Significant"
     
     /**
      * Fired when there is significant motion
      */
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_STARTED = "ACTION_AWARE_SIGNIFICANT_MOTION_STARTED"
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_ENDED = "ACTION_AWARE_SIGNIFICANT_MOTION_ENDED"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_STARTED = "ACTION_AWARE_SIGNIFICANT_MOTION_STARTED"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_ENDED = "ACTION_AWARE_SIGNIFICANT_MOTION_ENDED"
     
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_START = "com.awareframework.ios.sensor.significantmotion.SENSOR_START"
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_STOP = "com.awareframework.ios.sensor.significantmotion.SENSOR_STOP"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_START = "com.awareframework.ios.sensor.significantmotion.SENSOR_START"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_STOP = "com.awareframework.ios.sensor.significantmotion.SENSOR_STOP"
     
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_SET_LABEL = "com.awareframework.ios.sensor.significantmotion.ACTION_AWARE_SIGNIFICANT_MOTION_SET_LABEL"
-    public static let EXTRA_LABEL = "label"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_SET_LABEL = "com.awareframework.ios.sensor.significantmotion.ACTION_AWARE_SIGNIFICANT_MOTION_SET_LABEL"
+    static let EXTRA_LABEL = "label"
     
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC"
-    public static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC_COMPLETION = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC_COMPLETION"
-    public static let EXTRA_STATUS = "status"
-    public static let EXTRA_ERROR = "error"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC"
+    static let ACTION_AWARE_SIGNIFICANT_MOTION_SYNC_COMPLETION = "com.awareframework.ios.sensor.significantmotion.SENSOR_SYNC_COMPLETION"
+    static let EXTRA_STATUS = "status"
+    static let EXTRA_ERROR = "error"
 
 }
 
