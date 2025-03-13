@@ -1,18 +1,35 @@
 # AWARE: Significant Motion
 
-[![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.significantmotion.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.significantmotion)
-[![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.significantmotion.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.significantmotion)
-[![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.significantmotion.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.significantmotion)
-[![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.significantmotion.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.significantmotion)
+[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
+
 
 This sensor is used to track device significant motion. Also used internally by AWARE if available to save battery when the device is still with high-frequency sensors. SignificantMotionSensor.Observer allows programmers to take actions on detection of a significant motion.
 
 Based of: [sensorplatforms/open-sensor-platform/significantmotiondetector.c](https://github.com/sensorplatforms/open-sensor-platform)
 
 ## Requirements
-iOS 10 or later
+iOS 13 or later
 
 ## Installation
+
+You can integrate this framework into your project via Swift Package Manager (SwiftPM) or CocoaPods.
+
+### SwiftPM
+1. Open Package Manager Windows
+    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...` 
+
+2. Find the package using the manager
+    * Select `Search Package URL` and type `git@github.com:awareframework/com.awareframework.ios.sensor.significantmotion.git`
+
+3. Import the package into your target.
+
+4. Import com.awareframework.ios.sensor.barometer library into your source code.
+```swift
+import com_awareframework_ios_sensor_significantmotion
+```
+
+
+### CocoaPods
 
 com.awareframework.ios.sensor.significantmotion is available through [CocoaPods](https://cocoapods.org). 
 
@@ -107,7 +124,7 @@ class Observer:SignificantMotionObserver{
 
 ## Author
 
-Yuuki Nishiyama, yuuki.nishiyama@oulu.fi
+Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp 
 
 ## License
 
