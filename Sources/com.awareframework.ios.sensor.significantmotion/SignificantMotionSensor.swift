@@ -7,7 +7,7 @@
 
 import UIKit
 import CoreMotion
-import com_awareframework_ios_sensor_core
+import com_awareframework_ios_core
 
 public protocol SignificantMotionObserver{
     func onSignificantMotionStart()
@@ -118,7 +118,7 @@ public class SignificantMotionSensor: AwareSensor {
     public override func sync(force: Bool = false) {
         if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         if let engine = self.dbEngine {
-            engine.startSync(SignificantMotionData.TABLE_NAME, SignificantMotionData.self, DbSyncConfig.init().apply{config in
+            engine.startSync(DbSyncConfig.init().apply{config in
                 config.debug = self.CONFIG.debug
                 config.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.significantmotion.sync.queue")
                 config.completionHandler = { (status, error) in
@@ -173,12 +173,12 @@ public class SignificantMotionSensor: AwareSensor {
             }
             
             if (self.currentSignificantMotionState != self.lastSignificantMotionState){
-                let data = SignificantMotionData()
+                var data = SignificantMotionData()
                 data.moving = self.currentSignificantMotionState
                 data.label  = self.CONFIG.label
                 
                 if let engine = self.dbEngine {
-                    engine.save(data)
+                    engine.save([data])
                 }
                 
                 if (self.currentSignificantMotionState){

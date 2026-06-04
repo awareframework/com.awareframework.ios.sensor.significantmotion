@@ -1,14 +1,12 @@
 import XCTest
-import RealmSwift
 @testable import com_awareframework_ios_sensor_significantmotion
-import com_awareframework_ios_sensor_core
+import com_awareframework_ios_core
 
 class Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        Realm.Configuration.defaultConfiguration.inMemoryIdentifier = self.name
     }
     
     override func tearDown() {
@@ -62,7 +60,7 @@ class Tests: XCTestCase {
         
         let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
             config.debug = true
-            // config.dbType = .REALM
+            //
         })
         
         /// test set label action ///
@@ -125,7 +123,7 @@ class Tests: XCTestCase {
     }
     
     func testSignificantMotionData(){
-        let data = SignificantMotionData()
+        var data = SignificantMotionData()
         let dict = data.toDictionary()
         XCTAssertEqual(dict["moving"] as! Bool, false)
         
@@ -144,7 +142,6 @@ class Tests: XCTestCase {
         // success //
         let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
             config.debug = true
-            config.dbType = .REALM
             config.dbHost = "node.awareframework.com:1001"
             config.dbPath = "sync_db"
         })
@@ -174,7 +171,6 @@ class Tests: XCTestCase {
         // failure //
         let sensor2 = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
             config.debug = true
-            config.dbType = .REALM
             config.dbHost = "node.awareframework.com.com" // wrong url
             config.dbPath = "sync_db"
         })
