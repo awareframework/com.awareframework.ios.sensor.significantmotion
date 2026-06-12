@@ -80,6 +80,9 @@ public class SignificantMotionSensor: AwareSensor {
         super.init()
         CONFIG = config
         initializeDbEngine(config: config)
+        super.syncConfig = DbSyncConfig().apply { c in
+            c.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.significantmotion.sync.queue")
+        }
         if config.debug { print(SignificantMotionSensor.TAG, #function) }
     }
     
@@ -117,21 +120,14 @@ public class SignificantMotionSensor: AwareSensor {
     
     public override func sync(force: Bool = false) {
         if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
-        if let engine = self.dbEngine {
-            engine.startSync(DbSyncConfig.init().apply{config in
-                config.debug = self.CONFIG.debug
-                config.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.significantmotion.sync.queue")
-                config.completionHandler = { (status, error) in
-                    var userInfo: Dictionary<String,Any> = [SignificantMotionSensor.EXTRA_STATUS :status]
-                    if let e = error {
-                        userInfo[SignificantMotionSensor.EXTRA_ERROR] = e
-                    }
-                    self.notificationCenter.post(name: .actionAwareSignificantMotionSyncCompletion,
-                                                 object: self,
-                                                 userInfo:userInfo)
-                }
-            })
+        guard let engine = self.dbEngine, let syncConfig = self.syncConfig else { return }
+        syncConfig.debug = self.CONFIG.debug
+        syncConfig.completionHandler = { (status, error) in
+            var userInfo: Dictionary<String,Any> = [SignificantMotionSensor.EXTRA_STATUS: status]
+            if let e = error { userInfo[SignificantMotionSensor.EXTRA_ERROR] = e }
+            self.notificationCenter.post(name: .actionAwareSignificantMotionSyncCompletion, object: self, userInfo: userInfo)
         }
+        engine.startSync(syncConfig)
         self.notificationCenter.post(name: .actionAwareSignificantMotionSync, object: self)
     }
     

@@ -10,7 +10,7 @@ public struct SignificantMotionData: BaseDbModelSQLite {
     public var timezone: Int = AwareUtils.getTimeZone()
     public var os: String = "iOS"
     public var jsonVersion: Int = 1
-    public static let databaseTableName = "significantMotionData"
+    public static let databaseTableName = "ios_significant_motion"
 
     public var moving: Bool = false
 

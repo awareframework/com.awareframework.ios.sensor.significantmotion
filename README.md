@@ -23,7 +23,7 @@ You can integrate this framework into your project via Swift Package Manager (Sw
 
 3. Import the package into your target.
 
-4. Import com.awareframework.ios.sensor.barometer library into your source code.
+4. Import com.awareframework.ios.sensor.significantmotion library into your source code.
 ```swift
 import com_awareframework_ios_sensor_significantmotion
 ```
@@ -32,13 +32,13 @@ import com_awareframework_ios_sensor_significantmotion
 
 ## Public functions
 
-### SignificantMotioneSensor
+### SignificantMotionSensor
 
-+ `init(config:SignificantMotioneSensor.Config?)` : Initializes the significant motioneSensor sensor with the optional configuration.
++ `init(config:SignificantMotionSensor.Config?)` : Initializes the significant motion sensor with the optional configuration.
 + `start()`: Starts the significant motion sensor with the optional configuration.
 + `stop()`: Stops the service.
 
-###  SignificantMotioneSensor.Config
+### SignificantMotionSensor.Config
 
 Class to hold the configuration of the sensor.
 
@@ -74,22 +74,21 @@ Class to hold the configuration of the sensor.
 
 Contains the motion changes.
 
-| Field     | Type    | Description                                                     |
-| --------- | ------- | --------------------------------------------------------------- |
-| moving    | Boolean | Indicates that a significant motion was detected or not.        |
-| label     | String  | Customizable label. Useful for data calibration or traceability |
-| deviceId  | String  | AWARE device UUID                                               |
-| label     | String  | Customizable label. Useful for data calibration or traceability |
-| timestamp | Long    | unixtime milliseconds since 1970                                |
-| timezone  | Int     | Ttimezone of the device                          |
-| os        | String  | Operating system of the device (ex. android)                    |
+| Field       | Type   | Description                                                     |
+| ----------- | ------ | --------------------------------------------------------------- |
+| moving      | Bool   | Indicates that a significant motion was detected or not.        |
+| label       | String | Customizable label. Useful for data calibration or traceability |
+| deviceId    | String | AWARE device UUID                                               |
+| timestamp   | Int64  | unixtime milliseconds since 1970                                |
+| timezone    | Int    | Timezone of the device                                          |
+| os          | String | Operating system of the device (ex. ios)                        |
+| jsonVersion | Int    | JSON schema version                                             |
 
 ## Example usage
 ```swift
     let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{config in
         config.sensorObserver = Observer()
         config.debug  = true
-        config.dbType = .REALM
     })
     sensor.start()
     sensor.stop()
