@@ -170,6 +170,7 @@ public class SignificantMotionSensor: AwareSensor {
             
             if (self.currentSignificantMotionState != self.lastSignificantMotionState){
                 var data = SignificantMotionData()
+                data.timestamp = Int64(Date().timeIntervalSince1970 * 1000)
                 data.moving = self.currentSignificantMotionState
                 data.label  = self.CONFIG.label
                 
