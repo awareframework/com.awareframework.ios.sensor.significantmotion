@@ -16,7 +16,7 @@ You can integrate this framework into your project via Swift Package Manager (Sw
 
 ### SwiftPM
 1. Open Package Manager Windows
-    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...` 
+    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...`
 
 2. Find the package using the manager
     * Select `Search Package URL` and type `git@github.com:awareframework/com.awareframework.ios.sensor.significantmotion.git`
@@ -30,11 +30,11 @@ import com_awareframework_ios_sensor_significantmotion
 
 
 
-## Public functions
+## Public Functions
 
 ### SignificantMotionSensor
 
-+ `init(config:SignificantMotionSensor.Config?)` : Initializes the significant motion sensor with the optional configuration.
++ `init(config:SignificantMotionSensor.Config?)`: Initializes the significant motion sensor with the optional configuration.
 + `start()`: Starts the significant motion sensor with the optional configuration.
 + `stop()`: Stops the service.
 
@@ -45,21 +45,21 @@ Class to hold the configuration of the sensor.
 #### Fields
 
 + `sensorObserver: SignificantMotionObserver`: Callback for live data updates.
-+ `enabled: Boolean` Sensor is enabled or not. (default = `false`)
-+ `debug: Boolean` enable/disable logging to `Logcat`. (default = `false`)
-+ `label: String` Label for the data. (default = "")
-+ `deviceId: String` Id of the device that will be associated with the events and the sensor. (default = "")
-+ `dbEncryptionKey` Encryption key for the database. (default = `null`)
-+ `dbType: Engine` Which db engine to use for saving data. (default = `Engine.DatabaseType.NONE`)
-+ `dbPath: String` Path of the database. (default = "aware_significantmotion")
-+ `dbHost: String` Host for syncing the database. (default = `null`)
++ `enabled: Bool`: Sensor is enabled or not. (default = `false`)
++ `debug: Bool`: Enable/disable logging. (default = `false`)
++ `label: String`: Label for the data. (default = `""`)
++ `deviceId: String`: Id of the device that will be associated with the events and the sensor. (default = `""`)
++ `dbEncryptionKey: String?`: Encryption key for the database. (default = `nil`)
++ `dbType: DatabaseType`: Which db engine to use for saving data. (default = `.none`)
++ `dbPath: String`: Path of the database. (default = `"aware_significantmotion"`)
++ `dbHost: String?`: Host for syncing the database. (default = `nil`)
 
 ## Broadcasts
 
 ### Fired Broadcasts
 
-+ `SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_STARTED` fired when there is a significant motion.
-+ `SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_ENDED` fired when the significant motion has ended.
++ `SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_STARTED`: fired when there is a significant motion.
++ `SignificantMotionSensor.ACTION_AWARE_SIGNIFICANT_MOTION_ENDED`: fired when the significant motion has ended.
 
 ### Received Broadcasts
 
@@ -84,9 +84,9 @@ Contains the motion changes.
 | os          | String | Operating system of the device (ex. ios)                        |
 | jsonVersion | Int    | JSON schema version                                             |
 
-## Example usage
+## Example Usage
 ```swift
-    let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{config in
+    let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply { config in
         config.sensorObserver = Observer()
         config.debug  = true
     })
@@ -109,7 +109,7 @@ class Observer:SignificantMotionObserver{
 
 ## Author
 
-Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp 
+Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp
 
 ## License
 
