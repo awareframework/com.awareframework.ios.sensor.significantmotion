@@ -107,6 +107,12 @@ class Observer:SignificantMotionObserver{
 }
 ```
 
+## Related Links
+
+- [Core Motion | Apple Developer Documentation](https://developer.apple.com/documentation/coremotion)
+- [CMMotionManager | Apple Developer Documentation](https://developer.apple.com/documentation/coremotion/cmmotionmanager)
+- [CMAccelerometerData | Apple Developer Documentation](https://developer.apple.com/documentation/coremotion/cmaccelerometerdata)
+
 ## Author
 
 Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp
