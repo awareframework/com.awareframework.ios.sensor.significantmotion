@@ -58,6 +58,16 @@ public class SignificantMotionSensor: AwareSensor {
     private var lastSignificantMotionState = false
     var currentSignificantMotionState = false
     private let significantMotionThreshold = 1.0
+
+    /// Accelerometer samples (50 Hz) are received and processed here, not on the main thread.
+    /// Serial, so `buffer` and the motion state are only touched by one sample at a time.
+    private let motionQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.awareframework.ios.sensor.significantmotion.motion"
+        queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .utility
+        return queue
+    }()
     
     var isSignificantMotionActive = false
     
@@ -97,7 +107,8 @@ public class SignificantMotionSensor: AwareSensor {
              */
             let interval = 20.0 / 1000.0
             self.motion.accelerometerUpdateInterval = interval
-            self.motion.startAccelerometerUpdates(to: .main) { (accData, error) in
+            // Samples arrive on motionQueue; observers and notifications are still called on the main thread
+            self.motion.startAccelerometerUpdates(to: motionQueue) { (accData, error) in
                 if let data = accData {
                     let x = data.acceleration.x
                     let y = data.acceleration.y
@@ -106,7 +117,7 @@ public class SignificantMotionSensor: AwareSensor {
                     self.detectSignificantMotion(x:x, y:y, z:z)
                 }
             }
-            self.notificationCenter.post(name: .actionAwareSignificantMotionStart, object: self)
+            postOnMain(.actionAwareSignificantMotionStart)
         }
     }
     
@@ -114,7 +125,7 @@ public class SignificantMotionSensor: AwareSensor {
         if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         if self.motion.isAccelerometerAvailable{
             self.motion.stopAccelerometerUpdates()
-            self.notificationCenter.post(name: .actionAwareSignificantMotionStop, object: self)
+            postOnMain(.actionAwareSignificantMotionStop)
         }
     }
     
@@ -125,20 +136,32 @@ public class SignificantMotionSensor: AwareSensor {
         syncConfig.completionHandler = { (status, error) in
             var userInfo: Dictionary<String,Any> = [SignificantMotionSensor.EXTRA_STATUS: status]
             if let e = error { userInfo[SignificantMotionSensor.EXTRA_ERROR] = e }
-            self.notificationCenter.post(name: .actionAwareSignificantMotionSyncCompletion, object: self, userInfo: userInfo)
+            self.postOnMain(.actionAwareSignificantMotionSyncCompletion, userInfo: userInfo)
         }
         engine.startSync(syncConfig)
-        self.notificationCenter.post(name: .actionAwareSignificantMotionSync, object: self)
+        postOnMain(.actionAwareSignificantMotionSync)
     }
     
     public override func set(label:String) {
         if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         self.CONFIG.label = label
-        self.notificationCenter.post(name: .actionAwareSignificantMotionSetLabel, object: self, userInfo: [SignificantMotionSensor.EXTRA_LABEL: label])
+        postOnMain(.actionAwareSignificantMotionSetLabel, userInfo: [SignificantMotionSensor.EXTRA_LABEL: label])
     }
     
+    /// Posts a notification on the main thread (right away when already on it).
+    private func postOnMain(_ name: Notification.Name, userInfo: [AnyHashable: Any]? = nil) {
+        if Thread.isMainThread {
+            notificationCenter.post(name: name, object: self, userInfo: userInfo)
+        } else {
+            DispatchQueue.main.async {
+                self.notificationCenter.post(name: name, object: self, userInfo: userInfo)
+            }
+        }
+    }
+
+    /// Processes one accelerometer sample. Called on `motionQueue` (or by tests on their own thread).
+    /// The row is saved on the calling thread; observers and notifications are called on the main thread.
     func detectSignificantMotion(x:Double, y:Double, z:Double){
-        if self.CONFIG.debug { print(SignificantMotionSensor.TAG, #function) }
         /**
          * The algorithm information
          * https://developer.android.com/reference/android/hardware/SensorManager
@@ -178,16 +201,16 @@ public class SignificantMotionSensor: AwareSensor {
                     engine.save([data])
                 }
                 
-                if (self.currentSignificantMotionState){
-                    if let observer = self.CONFIG.sensorObserver{
-                        observer.onSignificantMotionStart()
+                let moving = self.currentSignificantMotionState
+                if self.CONFIG.debug { print(SignificantMotionSensor.TAG, "moving:", moving) }
+                DispatchQueue.main.async {
+                    if moving {
+                        self.CONFIG.sensorObserver?.onSignificantMotionStart()
+                        self.notificationCenter.post(name: .actionAwareSignificantMotionStarted, object: self)
+                    } else {
+                        self.CONFIG.sensorObserver?.onSignificantMotionEnd()
+                        self.notificationCenter.post(name: .actionAwareSignificantMotionEnded, object: self)
                     }
-                    self.notificationCenter.post(name: .actionAwareSignificantMotionStarted, object: self)
-                }else{
-                    if let observer = self.CONFIG.sensorObserver{
-                        observer.onSignificantMotionEnd()
-                    }
-                    self.notificationCenter.post(name: .actionAwareSignificantMotionEnded, object: self)
                 }
             }
             self.lastSignificantMotionState = self.currentSignificantMotionState
