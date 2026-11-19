@@ -498,4 +498,22 @@ class Tests: XCTestCase {
         [-0.0754241943359375,-0.009765625,-0.96533203125],
         [-0.0294342041015625,0.0254058837890625,-0.984588623046875]
     ]
+
+    /// The sensor creates its own table: rows can be saved and read back for sync without the app
+    /// creating the table (it used to be missing, so every save failed and nothing was synced)
+    func testSensorCreatesItsTable() {
+        let sensor = SignificantMotionSensor(SignificantMotionSensor.Config().apply { config in
+            config.dbPath = "create_table_test_\(UUID().uuidString)"
+        })
+        XCTAssertEqual(sensor.CONFIG.dbTableName, SignificantMotionData.databaseTableName)
+        guard let engine = sensor.dbEngine else { return XCTFail("no engine") }
+        let saved = expectation(description: "saved")
+        engine.save([SignificantMotionData()]) { error in
+            XCTAssertNil(error)
+            saved.fulfill()
+        }
+        wait(for: [saved], timeout: 5)
+        XCTAssertEqual(engine.count(filter: nil), 1)
+        XCTAssertEqual(engine.fetch(filter: nil, limit: nil)?.count, 1, "rows can be read for sync")
+    }
 }
