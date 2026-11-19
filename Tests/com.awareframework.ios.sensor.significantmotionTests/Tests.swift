@@ -56,6 +56,44 @@ class Tests: XCTestCase {
         
     }
     
+    /// Samples processed off the main thread (as from motionQueue): the observer and the
+    /// notifications are still called on the main thread
+    func testEventsArriveOnMainThreadWhenProcessedInBackground() {
+        final class Observer: SignificantMotionObserver {
+            var startOnMain: Bool?
+            var endOnMain: Bool?
+            func onSignificantMotionStart() { startOnMain = Thread.isMainThread }
+            func onSignificantMotionEnd() { endOnMain = Thread.isMainThread }
+        }
+        let observer = Observer()
+        let sensor = SignificantMotionSensor(SignificantMotionSensor.Config().apply { config in
+            config.sensorObserver = observer
+            config.dbPath = "significant_motion_thread_test"
+        })
+        let started = expectation(description: "started on main")
+        let ended = expectation(description: "ended on main")
+        // queue: nil delivers on the posting thread, so this sees the thread the sensor posts on
+        let t1 = NotificationCenter.default.addObserver(forName: .actionAwareSignificantMotionStarted, object: sensor, queue: nil) { _ in
+            XCTAssertTrue(Thread.isMainThread)
+            started.fulfill()
+        }
+        let t2 = NotificationCenter.default.addObserver(forName: .actionAwareSignificantMotionEnded, object: sensor, queue: nil) { _ in
+            XCTAssertTrue(Thread.isMainThread)
+            ended.fulfill()
+        }
+        DispatchQueue.global(qos: .utility).async {
+            XCTAssertFalse(Thread.isMainThread)
+            for _ in 0..<40 { sensor.detectSignificantMotion(x: 0, y: 0, z: 1) }      // still
+            for _ in 0..<5 { sensor.detectSignificantMotion(x: 2.5, y: 0, z: 1) }     // shake: moving
+            for _ in 0..<80 { sensor.detectSignificantMotion(x: 0, y: 0, z: 1) }      // still again
+        }
+        wait(for: [started, ended], timeout: 5, enforceOrder: true)
+        XCTAssertEqual(observer.startOnMain, true)
+        XCTAssertEqual(observer.endOnMain, true)
+        NotificationCenter.default.removeObserver(t1)
+        NotificationCenter.default.removeObserver(t2)
+    }
+
     func testControllers(){
         
         let sensor = SignificantMotionSensor.init(SignificantMotionSensor.Config().apply{ config in
